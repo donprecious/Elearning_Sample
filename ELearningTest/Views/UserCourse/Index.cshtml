@@ -1,0 +1,110 @@
+﻿@model X.PagedList.IPagedList<ELearningTest.Data.UserCourse>
+@using X.PagedList.Mvc.Core; 
+@using X.PagedList;
+@{
+    
+}
+<style>
+    .pagination li {
+        padding: 5px;
+        margin: 4px;
+        border: 2px solid black;
+    }
+    /*.pagination li.PagedList-skipToNext {
+        border-radius: 100%;
+        width: 25px;
+        height: 35px;
+        padding-left: 6px;
+       }*/
+
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-body ">
+                <p>Upload Course</p>
+                <form id="form">
+                    <a href="/course.xlsx">download format</a>
+                    <br/>
+                    <div class="form-group">
+                        <input type="file" name="file" id="file" placeholder="upload excel for course"/>
+                    </div>
+                    <br/>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+        <br/> <br/>
+        <div class="col-sm-12">
+            <h3>User Courses</h3>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Course</th>
+                    <th>Time Spent</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var m in Model)
+                {
+                    <tr>
+                        <td>
+                            @m.User.FirstName @m.User.LastName
+                            <br/> <small>@m.User.Email</small>
+                        </td>
+                        <td>@m.Course.Title</td>
+                        <td>@m.Duration</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+
+
+                </tfoot>
+            </table>
+            <div>
+                @Html.PagedListPager(Model, page => Url.Action("Index", new {page = page}))
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $("#form").submit(function(e) {
+            e.preventDefault();
+       
+            console.log(data);
+            var fileUpload = $("#file").get(0);
+
+            var files = fileUpload.files;
+
+            var data = new FormData();
+
+            data.append(files[0].name, files[0]); 
+
+            $.ajax(
+                {
+                    url:'@Url.Action("UploadCourse")',
+                    type: "post",
+                    data: data,
+                    contentType: false,
+
+                    processData: false,
+
+    
+
+                    async: false,
+                    success: function(res) {
+                        alert(res.message);
+                    },
+                    error: function(error) {
+                        alert("Error Uploading File, Ensure your sheet is using the standard format");
+                        console.log(error);
+                    }
+                });
+        })
+    </script>
+}
